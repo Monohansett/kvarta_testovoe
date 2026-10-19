@@ -33,7 +33,6 @@ export function OrderForm() {
     control,
     reset,
     formState: { errors, isSubmitting },
-    clearErrors,
   } = useForm<LeadFormData>({
     resolver: zodResolver(leadSchema),
     defaultValues: {

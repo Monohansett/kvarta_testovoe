@@ -3,12 +3,14 @@ import Database from 'better-sqlite3';
 import path from 'path';
 import fs from 'fs';
 
-const dataDir = path.join(process.cwd(), 'data');
+const isVercel = process.env.VERCEL === '1';
+const dataDir = isVercel ? '/tmp' : path.join(process.cwd(), 'data');
+
 if (!fs.existsSync(dataDir)) {
   fs.mkdirSync(dataDir, { recursive: true });
 }
 
-const dbPath = path.join(process.cwd(), 'data', 'leads.db');
+const dbPath = path.join(dataDir, 'leads.db');
 const db = new Database(dbPath);
 
 db.exec(`
@@ -60,10 +62,11 @@ export async function POST(request: Request) {
       );
     }
 
-    const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000).toISOString();
     const existingLead = db
-      .prepare(`SELECT id FROM leads WHERE phone = ? AND created_at > ?`)
-      .get(cleanPhone, tenMinutesAgo);
+      .prepare(
+        `SELECT id FROM leads WHERE phone = ? AND created_at >= datetime('now', '-10 minutes')`,
+      )
+      .get(cleanPhone);
 
     if (existingLead) {
       return NextResponse.json({
@@ -82,7 +85,7 @@ export async function POST(request: Request) {
     stmt.run(
       name.trim(),
       cleanPhone,
-      intent || 'Регулярная подписка',
+      intent || 'subscription',
       comment || '',
       utm_source || null,
       utm_medium || null,
