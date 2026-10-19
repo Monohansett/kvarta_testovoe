@@ -5,6 +5,7 @@ import { Subscription } from '@/components/sections/Subscription';
 import { Delivery } from '@/components/sections/Delivery';
 import { OrderForm } from '@/components/sections/OrderForm';
 import { Footer } from '@/components/sections/Footer';
+import { Suspense } from 'react';
 
 export default function Home() {
   return (
@@ -14,7 +15,11 @@ export default function Home() {
       <Catalog />
       <Subscription />
       <Delivery />
-      <OrderForm />
+      <Suspense
+        fallback={<div className="py-12 text-center">Загрузка формы...</div>}
+      >
+        <OrderForm />
+      </Suspense>
       <Footer />
     </main>
   );
