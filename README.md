@@ -1,36 +1,22 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Отчет по проекту: Лендинг кофейни «Kvarta»
 
-## Getting Started
+## 🛠 Что делали сами и с помощью ИИ
 
-First, run the development server:
+- **Дизайн и верстка (Claude Artifacts + ИИ):** Первоначальный дизайн и компоновку интерфейса генерировали с помощью Claude Artifacts, после чего вручную и через точечные промпты направляли правки по сетке, шрифтам, мобильной адаптивности и цветовой гамме.
+- **Архитектура и логика:** Постановка бизнес-задачи, утверждение стека (Next.js 15, Tailwind v4, TypeScript, SQLite), проектирование структуры формы обратной связи и API-роутов для сохранения лидов.
+- **Тестирование и интеграция:** Интеграционное тестирование, ручная проверка краевых случаев (отправка формы, отсечение дубликатов, поведение мобильной клавиатуры и каретки в поле ввода номера).
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🤖 Где ИИ ошибался и как мы это заметили
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+1. **Маска телефона:** Сначала ИИ предложил реализацию через ручные регулярки и `if`-условия. При тестировании обнаружилось, что каретка «застревает» на дефисах, а поле невозможно полностью очистить с помощью `backspace`.
+   - _Как исправили:_ Отказались от костылей в пользу проверенной библиотеки `react-number-format` с компонентом `Controller` и фильтрацией источника событий (`sourceInfo.source === 'event'`).
+2. **Дедупликация на сервере (10 минут):** ИИ передавал JS-дату в строковом формате `ISO` с буквой `T` в SQL-запрос `better-sqlite3`, из-за чего строковое сравнение с форматом SQLite `CURRENT_TIMESTAMP` ломалось, и дубликаты не отсекались.
+   - _Как заметили:_ Увидели повторные записи с одинаковым номером в локальной базе данных `leads.db`.
+   - _Как исправили:_ Перенесли расчет интервала на уровень самой базы данных с помощью встроенной функции `datetime('now', '-10 minutes')`.
+3. **Ложная валидация после сброса формы:** После успешного сабмита метод `reset()` сбрасывал значение телефона, но маска мгновенно генерировала событие `onChange`, вызывая ошибку валидации пустой строки.
+   - _Как исправили:_ Настроили игнорирование программных изменений в `onValueChange` от библиотеки маски.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## ⏱ Что не успели / сделали бы иначе
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Не успели внедрить стороннюю библиотеку для всплывающих `toast`-уведомлений (ограничились адаптивным стилизованным баннером-статусом под формой).
+- Для продакшн-системы с высокой нагрузкой вместо файловой SQLite на сервере использовали бы полноценную реляционную БД (например, PostgreSQL) с пулом соединений.
