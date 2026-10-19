@@ -11,7 +11,7 @@ const links = [
 export function Header() {
   return (
     <header className="relative z-10">
-      <div className="wrap flex min-h-[72px] items-center justify-between gap-3">
+      <div className="wrap flex min-h-18 items-center justify-between gap-3">
         <Link
           href="#top"
           className="display text-[22px] text-white transition-opacity hover:opacity-75 focus-visible:outline-[3px] focus-visible:outline-offset-4 focus-visible:outline-blush"
@@ -24,7 +24,7 @@ export function Header() {
             <Link
               key={l.href}
               href={l.href}
-              className="bg-[linear-gradient(var(--color-blush),var(--color-blush))] bg-[length:0_2px] bg-[position:left_bottom] bg-no-repeat py-2 font-medium text-white transition-[background-size] duration-300 hover:bg-[length:100%_2px] focus-visible:bg-[length:100%_2px] focus-visible:outline-none motion-reduce:transition-none"
+              className="bg-[linear-gradient(var(--color-blush),var(--color-blush))] bg-size-[0_2px] bg-bottom-left bg-no-repeat py-2 font-medium text-white transition-[background-size] duration-300 hover:bg-size-[100%_2px] focus-visible:bg-size-[100%_2px] focus-visible:outline-none motion-reduce:transition-none"
             >
               {l.label}
             </Link>

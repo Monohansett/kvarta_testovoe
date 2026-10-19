@@ -4,19 +4,19 @@ const steps = [
   {
     day: 'Четверг',
     text: 'Обжариваем партию по 5 кг',
-    image: '/images/about-drum.svg',
+    image: '/coffee_roaster.jpg',
     alt: 'Обжарочная машина',
   },
   {
     day: 'Пятница',
     text: 'Развозим свежую обжарку по Минску',
-    image: '/images/about-crate.svg',
+    image: '/coffee_bag.jpg',
     alt: 'Пачки кофе готовы к доставке',
   },
   {
     day: '1–3 день',
     text: 'Зерно у вас, пока вкус на пике',
-    image: '/images/about-cup.svg',
+    image: '/brewing_coffee.jpg',
     alt: 'Чашка кофе дома',
   },
 ];

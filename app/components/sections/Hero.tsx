@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import { ButtonLink } from '@/components/ui/Button';
 import { Header } from './Header';
 
@@ -8,15 +7,15 @@ export function Hero() {
       id="top"
       className="relative flex min-h-160 flex-col bg-navy text-white md:min-h-190"
     >
-      {/*<video autoPlay muted loop playsInline poster="..." className="absolute inset-0 h-full w-full object-cover" /> */}
-      <Image
-        src="/images/hero.svg"
-        alt=""
-        fill
-        priority
-        sizes="100vw"
-        className="object-cover"
-      />
+      <video
+        autoPlay
+        muted
+        loop
+        playsInline
+        className="absolute inset-0 h-full w-full object-cover"
+      >
+        <source src="/coffee_shop_preview.mp4" type="video/mp4" />
+      </video>
       <div className="absolute inset-0 bg-linear-to-b from-[#0a101c]/60 via-[#0a101c]/50 to-[#0a101c]/70" />
 
       <Header />
