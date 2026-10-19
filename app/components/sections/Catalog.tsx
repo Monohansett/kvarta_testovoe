@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { products } from '@/constants/products';
 import { ProductCard } from '@/components/ui/ProductCard';
 
@@ -24,8 +24,30 @@ function Arrow({ dir }: { dir: 'left' | 'right' }) {
   );
 }
 
+const arrowClass =
+  'absolute top-[calc(50%-12px)] z-10 hidden size-12 -translate-y-1/2 place-items-center rounded-full ' +
+  'border border-ink/10 bg-white text-ink shadow-[0_8px_24px_rgba(10,16,28,.22)] transition ' +
+  'hover:bg-ink hover:text-white focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-ink ' +
+  'disabled:pointer-events-none disabled:opacity-0 motion-reduce:transition-none md:grid';
+
 export function Catalog() {
   const track = useRef<HTMLUListElement>(null);
+  const [edge, setEdge] = useState({ start: true, end: false });
+
+  const update = useCallback(() => {
+    const el = track.current;
+    if (!el) return;
+    setEdge({
+      start: el.scrollLeft <= 4,
+      end: el.scrollLeft + el.clientWidth >= el.scrollWidth - 4,
+    });
+  }, []);
+
+  useEffect(() => {
+    update();
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
+  }, [update]);
 
   const scroll = (dir: 1 | -1) => {
     const el = track.current;
@@ -33,56 +55,53 @@ export function Catalog() {
     el.scrollBy({ left: dir * el.clientWidth * 0.8, behavior: 'smooth' });
   };
 
-  const arrowClass =
-    'grid size-11 place-items-center rounded-md border-2 border-ink text-ink transition-colors hover:bg-ink hover:text-white focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-ink';
-
   return (
     <section id="catalog" className="py-14 md:py-24">
       <div className="wrap">
         <p className="mb-3 text-[13px] font-semibold uppercase tracking-wide text-muted">
           Ассортимент
         </p>
-        <div className="mb-3 flex items-end justify-between gap-4">
-          <h2 className="display text-[25px] md:text-4xl">
-            Три зерна и дрип-пакеты
-          </h2>
-          <span className="whitespace-nowrap text-[13px] font-semibold uppercase tracking-wide text-muted md:hidden">
-            Листайте →
-          </span>
-          <div className="hidden gap-2 md:flex">
-            <button
-              type="button"
-              aria-label="Назад"
-              onClick={() => scroll(-1)}
-              className={arrowClass}
-            >
-              <Arrow dir="left" />
-            </button>
-            <button
-              type="button"
-              aria-label="Вперёд"
-              onClick={() => scroll(1)}
-              className={arrowClass}
-            >
-              <Arrow dir="right" />
-            </button>
-          </div>
+        <h2 className="display mb-3 text-[25px] md:text-4xl">
+          Три зерна и дрип-пакеты
+        </h2>
+
+        <div className="relative">
+          <button
+            type="button"
+            aria-label="Назад"
+            onClick={() => scroll(-1)}
+            disabled={edge.start}
+            className={`${arrowClass} left-0 md:-translate-x-1/2`}
+          >
+            <Arrow dir="left" />
+          </button>
+          <button
+            type="button"
+            aria-label="Вперёд"
+            onClick={() => scroll(1)}
+            disabled={edge.end}
+            className={`${arrowClass} right-0 md:translate-x-1/2`}
+          >
+            <Arrow dir="right" />
+          </button>
+
+          <ul
+            ref={track}
+            onScroll={update}
+            tabIndex={0}
+            aria-label="Каталог, листайте по горизонтали"
+            className="-mx-5 -mb-4 flex snap-x snap-mandatory scroll-px-5 gap-4 overflow-x-auto px-5 pb-11 pt-4 scrollbar-none focus-visible:outline-[3px] focus-visible:outline-ink md:-mx-1 md:scroll-px-1 md:px-1 [&::-webkit-scrollbar]:hidden"
+          >
+            {products.map((p) => (
+              <li
+                key={p.id}
+                className="shrink-0 basis-[78%] snap-start md:basis-[calc(30%-12px)]"
+              >
+                <ProductCard product={p} />
+              </li>
+            ))}
+          </ul>
         </div>
-        <ul
-          ref={track}
-          tabIndex={0}
-          aria-label="Каталог, листайте по горизонтали"
-          className="-mx-1 -mb-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-1 pb-11 pt-4 [scrollbar-color:var(--color-ink)_#e1e4ea] scrollbar-thin focus-visible:outline-[3px] focus-visible:outline-ink"
-        >
-          {products.map((p) => (
-            <li
-              key={p.id}
-              className="shrink-0 basis-[78%] snap-start md:basis-[calc(30%-12px)]"
-            >
-              <ProductCard product={p} />
-            </li>
-          ))}
-        </ul>
       </div>
     </section>
   );
