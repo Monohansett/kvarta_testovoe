@@ -4,6 +4,7 @@ import { Catalog } from '@/components/sections/Catalog';
 import { Subscription } from '@/components/sections/Subscription';
 import { Delivery } from '@/components/sections/Delivery';
 import { OrderForm } from '@/components/sections/OrderForm';
+import { Footer } from '@/components/sections/Footer';
 
 export default function Home() {
   return (
@@ -14,6 +15,7 @@ export default function Home() {
       <Subscription />
       <Delivery />
       <OrderForm />
+      <Footer />
     </main>
   );
 }
